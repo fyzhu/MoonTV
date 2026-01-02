@@ -2,8 +2,6 @@ import { BackButton } from './BackButton';
 import MobileBottomNav from './MobileBottomNav';
 import MobileHeader from './MobileHeader';
 import Sidebar from './Sidebar';
-import { ThemeToggle } from './ThemeToggle';
-import { UserMenu } from './UserMenu';
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -16,9 +14,9 @@ const PageLayout = ({ children, activePath = '/' }: PageLayoutProps) => {
       {/* 移动端头部 */}
       <MobileHeader showBackButton={['/play'].includes(activePath)} />
 
-      {/* 主要布局容器 */}
-      <div className='flex md:grid md:grid-cols-[auto_1fr] w-full min-h-screen md:min-h-auto'>
-        {/* 侧边栏 - 桌面端显示，移动端隐藏 */}
+      {/* 主要布局容器：移动端保持单列，桌面端改为行栈（顶部 sidebar + 内容） */}
+      <div className='flex flex-col md:grid md:grid-rows-[auto_1fr] w-full min-h-screen md:min-h-auto'>
+        {/* 侧边栏 - 桌面端显示在顶部，移动端隐藏 */}
         <div className='hidden md:block'>
           <Sidebar activePath={activePath} />
         </div>
@@ -32,11 +30,7 @@ const PageLayout = ({ children, activePath = '/' }: PageLayoutProps) => {
             </div>
           )}
 
-          {/* 桌面端顶部按钮 */}
-          <div className='absolute top-2 right-4 z-20 hidden md:flex items-center gap-2'>
-            <ThemeToggle />
-            <UserMenu />
-          </div>
+          {/* 桌面端顶部按钮 已移至 header */}
 
           {/* 主内容 */}
           <main
