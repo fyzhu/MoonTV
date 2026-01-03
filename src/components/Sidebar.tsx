@@ -10,7 +10,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useLayoutEffect,
   useState,
 } from 'react';
 
@@ -22,9 +21,9 @@ interface SidebarContextType {
   isCollapsed: boolean;
 }
 
-const SidebarContext = createContext<SidebarContextType>({
+const SidebarContext = createContext({
   isCollapsed: false,
-});
+} as SidebarContextType);
 
 export const useSidebar = () => useContext(SidebarContext);
 
@@ -44,52 +43,15 @@ const Logo = () => {
 };
 
 interface SidebarProps {
-  onToggle?: (collapsed: boolean) => void;
   activePath?: string;
-}
-
-// 在浏览器环境下通过全局变量缓存折叠状态，避免组件重新挂载时出现初始值闪烁
-declare global {
-  interface Window {
-    __sidebarCollapsed?: boolean;
-  }
 }
 
 const Sidebar = ({ activePath = '/' }: SidebarProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  // 若同一次 SPA 会话中已经读取过折叠状态，则直接复用，避免闪烁
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
-    if (
-      typeof window !== 'undefined' &&
-      typeof window.__sidebarCollapsed === 'boolean'
-    ) {
-      return window.__sidebarCollapsed;
-    }
-    return false; // 默认展开
-  });
-
-  // 首次挂载时读取 localStorage，以便刷新后仍保持上次的折叠状态
-  useLayoutEffect(() => {
-    const saved = localStorage.getItem('sidebarCollapsed');
-    if (saved !== null) {
-      const val = JSON.parse(saved);
-      setIsCollapsed(val);
-      window.__sidebarCollapsed = val;
-    }
-  }, []);
-
-  // 当折叠状态变化时，同步到 <html> data 属性，供首屏 CSS 使用
-  useLayoutEffect(() => {
-    if (typeof document !== 'undefined') {
-      if (isCollapsed) {
-        document.documentElement.dataset.sidebarCollapsed = 'true';
-      } else {
-        delete document.documentElement.dataset.sidebarCollapsed;
-      }
-    }
-  }, [isCollapsed]);
+  // 折叠功能已移除，默认始终展开
+  const isCollapsed = false;
 
   const [active, setActive] = useState(activePath);
 
